@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Messenger;
 import android.content.pm.Signature;
@@ -187,6 +188,18 @@ public class XAPKDownloaderActivity extends Activity implements IDownloaderClien
   
   if (newState == STATE_COMPLETED) {
    mProgressDialog.setMessage (xmlData.getString("xapk_text_preparing_assets", ""));
+   if (xmlData != null) {
+    Log.v(LOG_TAG, "Starting up expansion authority");
+    String expansionAuthority = xmlData.getString("xapk_expansion_authority");
+    this.getApplicationContext().getContentResolver().call(
+     Uri.parse("content://" + expansionAuthority),
+     "download_completed",
+     null,
+     null
+    );
+   } else {
+    Log.e (LOG_TAG, "Couldn't start expansion authority.");
+   }
    
    // Dismiss progress dialog.
    mProgressDialog.dismiss ();
