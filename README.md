@@ -100,7 +100,7 @@ The plugin provides the following variables, which you can set in your app's `co
   - *Default:* The package name of your app (e.g. the "id" attribute in your config.xml's "widget" tag).
 - **XAPK_MAIN_VERSION**: The version number for your "main" expansion file. If provided, the plugin will only use an expansion file with this version number.
   - *Default:* 0. A value of 0 indicates that the app should use the first file it finds in the expansion directory that has a name starting with "main".
-- XAPK_MAIN_FILESIZE**: The size (in bytes) of your "main" expansion file. If provided, the plugin will verify that the file on the phone is this size, and will delete and re-download it if it's the wrong size.
+- **XAPK_MAIN_FILESIZE**: The size (in bytes) of your "main" expansion file. If provided, the plugin will verify that the file on the phone is this size, and will delete and re-download it if it's the wrong size.
   - *Default:* 0. A value of 0 indicates that we should skip the size check
   - *Optional:* -1. A value of -1 indicates that you're not using a "main" file. The plugin won't look for it, read from it, or complain about its absence.
 - **XAPK_PATCH_VERSION**: The version number for your "patch" expansion file. Same behavior and options as XAPK_MAIN_VERSION
@@ -131,15 +131,15 @@ In Windows, I use 7zip, which shows "version 20" in the file properties. Some zi
 
 (You may ask, why use a ZIP file if it's not compressed? The reason is that Google requires us to use just one file, hence a ZIP. Leaving it uncompressed lets us quickly read from it, and since most media formats are already compressed, compression is unnecessary anyway.)
 
-Google doesn't care what name you give the file when you upload it. When the file is downloaded onto the user's device it will be [automatically renamed][3] to `[main|patch].<expansion-version>.<package-name>.obb], e.g. `main.18009.org.example.mycordova.obb`. Hence these are often called **OBB files**.
+Google doesn't care what name you give the file when you upload it. When the file is downloaded onto the user's device it will be [automatically renamed][3] to `[main|patch].<expansion-version>.<package-name>.obb]`, e.g. `main.18009.org.example.mycordova.obb`. Hence these are often called **OBB files**.
 
 [3]: https://developer.android.com/google/play/expansion-files.html#Filename
 
 ### Main & Patch files
 
-Google allows you to provide two expansion files, which it refers to as the `main` file and `patch` file. You're free to use these however you want, but the recommended pattern is that you start with a big `main` expansion file in your first release. Then, if there's a subsequent release where you need to change just one of the many files archived in `main`, you can upload a `patch` file that contains *only* that one changed file. Then your users will have only that small download for their next upgrade, instead of having to download your whole big main file again.
+Google allows you to provide two expansion files, which it refers to as the `main` file and `patch` file. You're free to use these however you want, but the recommended pattern is that you start with a big `main` expansion file in your first release. Then, if there's a subsequent release where you need to change just one of the many files archived in `main`, you can upload a `patch` file that contains *only* that one changed file (and leave `main` unchanged). Then your users will have only that small download for their next upgrade, instead of having to download a whole big `main` file again.
 
-This plugin helps you to do that, by preferring files in `patch` over files in `main`. That is, if you have a file `pics/kitten.jpg` in your `main` and your `patch`, the plugin will use the `kitten.jpg` from the `patch" and ignore the one in `main`.
+This plugin helps you to do that, by preferring files in `patch` over files in `main`. That is, if you have a file `pics/kitten.jpg` in your `main` and your `patch`, the plugin will use the `kitten.jpg` from `patch` and ignore the one in `main`.
 
 ### Expansion file version numbers
 
@@ -151,31 +151,33 @@ To quote [the Google docs](https://developer.android.com/google/play/expansion-f
 
 So when you first add an Expansion file to your app, you should make the file version numbers (in `XAPK_MAIN_VERSION` or `XAPK_PATCH_VERSION`) match the Android build number (the `android-versionCode` attribute of `config.xml`'s `widget` tag.)
 
-On subsequent updates to your app, if none of the expansion content changes, you don't need to update the expansion version number, or upload a new copy of the expansion file to Google Play. (Though in Google Play, you may need to indicate that the app is using this particular expansion file.)
+On subsequent updates to your app if none of the expansion content changes, then you don't need to update the expansion version number or upload a new copy of the expansion file to Google Play. (Though in Google Play, you may need to indicate that the app is using this particular expansion file.)
 
-When your expansion file does change, you'll need to bump the Android build number, update the file's version number to match, and upload the new file to Google Play.
+When your expansion file does change, then you'll need to bump the Android build number, update the file's version number to match, and upload the new file to Google Play along with a new APK.
 
 ## In Cordova
 
 Remember that expansion authority URI you set up in `XAPK_EXPANSION_AUTHORITY`? You can reference your expansion files from within your Cordova app, using an [Android Content URI][1] which includes your expansion authority string.
  
 ```html
-<img src="content://com.test.expansion/myfile.png">
+<img src="content://org.example.mycordova/myfile.png">
 ```
 
-The formula is `content://` + (your expansion authority) + `/` + (the relative path to the file inside your main/patch archive).
+The formula is `content://` + `(your expansion authority)` + `/` + `(the relative path to the file inside your main/patch archive)`.
 
 ## Testing
 
 See Google's developer documentation for how to test an APK Expansion file: https://developer.android.com/google/play/expansion-files.html#Testing
 
-tldr; You can test the "read" side of it by uploading the expansion file manually onto your test device. It must be in a specific directory (`/something/something/Android/obb/{your.apps.package.name}/`) and with a specific file name (`main.{version}.{your.apps.package.name}.obb` or `patch.{version}.{your.apps.package.name}.obb`), although if you set `XAPK_MAIN_VERSION` or `XAPK_PATCH_VERSION` to `0` the version doesn't need to be right. If you customized your `XAPK_EXPANSION_AUTHORITY` value, note that this file name is based on the app's package name, *not* the expansion authority name (this can be confusing, because by default these names are the same).
+tldr; You can test the "read" side of it by uploading the expansion file manually onto your test device. It must be in a specific directory (`/something/something/Android/obb/{your.apps.package.name}/`) and with a specific file name (`main.{version}.{your.apps.package.name}.obb` or `patch.{version}.{your.apps.package.name}.obb`), although if you set `XAPK_MAIN_VERSION` or `XAPK_PATCH_VERSION` to `0` the version doesn't need to be right.
+
+(If you customized your `XAPK_EXPANSION_AUTHORITY` value, note that this file name is based on the app's package name, *not* the expansion authority name.)
 
 You can only test the downloader code by compiling your app, uploading it to the Google Play store, and installing/upgrading the app through Google Play. An alpha or beta channel is great for this purpose. **However,** inconveniently, you can't create an alpha or beta release for an app until it has had at least one production release.
 
 ## Cross-platform support
 
-Note that if your app is cross-platform (and that's a big part of Cordova's appeal!) those `content://` URLs won't work on other platforms. You'll need to translate those URLs to something platform-appropriate, perhaps as a pre-transpiler step in your app, or through a dynamic find/replace in the app itself.
+Note that if your app is cross-platform (and that's a big part of Cordova's appeal!) those `content://` URLs won't work on other platforms. You'll need to translate those URLs to something platform-appropriate, perhaps as a step in your app's build process, or through a dynamic find/replace in the app itself.
 
 # Tips
 
