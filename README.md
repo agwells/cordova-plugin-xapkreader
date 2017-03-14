@@ -3,17 +3,22 @@ cordova-plugin-xapkreader (Agamemnus/Flyingsoft Games edition)
 
 Table of Contents
 ------------------
-[Version](#version)
-[Purpose](#purpose)
-[Donations?](#donations)
-[Requirements](#requirements)
-[Installation & Setup](#Installation & Setup)
-[Completing Installation](#completing-installation) <br/>
-[Usage](#usage) <br/>
-[OBB Files](#obb-files) <br/>
-[Compatibility with cordova-plugin-splashscreen](#compatibility-with-cordova-plugin-splashscreen) <br/>
-[License](#license) <br/>
-[Tips](#tips) <br/>
+- [Version](#version)
+- [Purpose](#purpose)
+- [Donations?](#donations)
+- [Requirements](#requirements)
+- [Installation & Setup](#installation--setup)
+  - [Plugin Config Variables](#plugin-config-variables]
+- [Usage](#usage)
+  - [Expansion Files (OBB Files)](#expansion-files-obb-files)
+    - [Main & Patch files](#main--patch-files)
+    - [Expansion file version numbers](#expansion-file-version-numbers)
+  - [In Cordova](#in-cordova)
+  - [Testing](#testing)
+  - [Cross-platform support](#Cross-platform-support)
+- [Tips](#tips)
+- [Compatibility with cordova-plugin-splashscreen](#compatibility-with-cordova-plugin-splashscreen)
+- [License](#license)
 
 # Version
 The information in this readme is current as of March 7, 2017. This version should theoretically work for at least Cordova 5.3.1 through 6.5.0.
@@ -104,9 +109,9 @@ The plugin provides the following variables, which you can set in your app's `co
 
 **Note:** Cordova does not seem to automatically propagate changes to these variables in into the compiled app. So when you update one of these, you'll need to either manually edit the file `plugins/android.json` with the new value, or (if you've saved all your settings into your `config.xml` file) remove and re-add the plugin using `cordova plugin rm` and `cordova plugin add`.
 
-# Using the plugin in your app
+# Usage
 
-## Creating the expansion (OBB) file(s)
+## Expansion files (OBB files)
 
 The expansion file should be a non-compressed ZIP file (also known as a "STOR" or "store"). That is, a ZIP file with 0% compression. Your ZIP file *can* include a directory structure, which can help to keep the files organized. 
 
@@ -116,6 +121,7 @@ In Windows, I use 7zip, which shows "version 20" in the file properties. Some zi
 
 (You may ask, why use a ZIP file if it's not compressed? The reason is that Google requires us to use just one file, hence a ZIP. Leaving it uncompressed lets us quickly read from it, and since most media formats are already compressed, compression is unnecessary anyway.)
 
+Google doesn't care what name you give the file when you upload it. When the file is downloaded onto the user's device it will be [automatically renamed][3] to `[main|patch].<expansion-version>.<package-name>.obb], e.g. `main.18009.org.example.mycordova.obb`. Hence these are often called **OBB files**. [3]: https://developer.android.com/google/play/expansion-files.html#Filename
 
 ### Main & Patch files
 
@@ -137,9 +143,9 @@ On subsequent updates to your app, if none of the expansion content changes, you
 
 When your expansion file does change, you'll need to bump the Android build number, update the file's version number to match, and upload the new file to Google Play.
 
-## Accessing the expansion content
+## In Cordova
 
-Remember that expansion authority URI you set up in `XAPK_EXPANSION_AUTHORITY`? You can reference your expansion files in your Cordova app, using an [Android Content URI][1] which includes your expansion authority string.
+Remember that expansion authority URI you set up in `XAPK_EXPANSION_AUTHORITY`? You can reference your expansion files from within your Cordova app, using an [Android Content URI][1] which includes your expansion authority string.
  
 ```html
 <img src="content://com.test.expansion/myfile.png">
@@ -159,7 +165,7 @@ You can only test the downloader code by compiling your app, uploading it to the
 
 Note that if your app is cross-platform (and that's a big part of Cordova's appeal!) those `content://` URLs won't work on other platforms. You'll need to translate those URLs to something platform-appropriate, perhaps as a pre-transpiler step in your app, or through a dynamic find/replace in the app itself.
 
-#Tips
+# Tips
 
 * When you upload an APK for the first time to Google Play, there will be no dialog to attach an expansion file. You will only see it on the second and subsequent times.
 
@@ -168,7 +174,7 @@ Note that if your app is cross-platform (and that's a big part of Cordova's appe
 * If you upload a new main or patch APK expansion file to Google Play, the old main or patch file will be deleted when Google Play updates the user's device.
 
 
-#Compatibility with cordova-plugin-splashscreen
+# Compatibility with cordova-plugin-splashscreen
 If you are using `cordova-plugin-splashscreen`, by default this plugin will prevent your splash screen from appearing on Android.  This is because `cordova-plugin-splashscreen` is wired to automatically hide the splash screen after receiving a pause event.  When this plugin activates the download activity, the pause event is fired, and the splash screen is hidden.
    
 To avoid this behavior, you'll want to set `XAPK_AUTO_DOWNLOAD` to `false` and invoke the plugin explicitly within your Javascript code by calling `XAPKReader.downloadExpansionIfAvailable`. Add the following in your javascript code at the earliest point where you know the splash page has been removed (either by explicitly hiding it or based on the timeout you set for the splashpage).
@@ -185,7 +191,7 @@ To avoid this behavior, you'll want to set `XAPK_AUTO_DOWNLOAD` to `false` and i
     }
 ```
 
-#License
+# License
 (for any non-Android SDK parts...)
 
 The MIT License (MIT)
