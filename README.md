@@ -27,17 +27,24 @@ The information in this readme is current as of March 7, 2017. This version shou
 
 This plugin makes it easier to use a [Google Play APK expansion file](http://developer.android.com/google/play/expansion-files.html) with your Cordova app.
 
-Google Play limits the size of an APK file in the store to 100 megabytes. If your app needs to be larger than that due to the inclusion of lots of static media files, Google allows you to include two APK expansion files with your app. These are static files, each of which can be up to 2 GB in size, and which are automatically stored and served by Google Play's servers.
+Google Play limits the size of an APK file in the store to 100 megabytes. If your app needs to be larger than that due to the inclusion of lots of static media files, Google allows you to include two APK expansion files with your app, each up to 2GB in size. You upload these files to Google Play when setting up a new release, and when a users installs or upgrades your app through Google Play, it will automatically attempt to download the correct expansion files for the app.
 
-To use an APK expansion file, your app needs additional code to access the file's contents, and to initiate a download if the file isn't present. This plugin takes care of those steps for you.
+To use an APK expansion file, your app needs additional code to access the expanion files' contents, and to initiate a download if the file isn't present. This plugin takes care of those steps for you, and allows you to easily access the expansion file contents like so:
+
+```html
+<img src="content://com.test.expansion/myfile.png">
+```
 
 # Donations
 
-Yes, I put this near the top, so you, dear reader, wouldn't miss it. Perhaps you'd like to donate some money to my gittip account? https://www.gittip.com/agamemnus/ I also have a Paypal account: *agamemnus at flyingsoftgames dot com*.
+Yes, I put this near the top, so you, dear reader, wouldn't miss it.
 
-Or... maybe try my first game on Google Play, and perhaps buy some gems:
-<br/>
-https://play.google.com/store/apps/details?id=com.flyingsoft.safari.jigsaw.free
+* Perhaps you'd like to donate some money to my gittip account?
+** https://www.gittip.com/agamemnus/
+* I also have a Paypal account
+** *agamemnus at flyingsoftgames dot com*.
+* Or... maybe try my first game on Google Play, and perhaps buy some gems
+** https://play.google.com/store/apps/details?id=com.flyingsoft.safari.jigsaw.free
 
 Alternatively, simply donate to the open source community. And here I would like to take the opportunity to thank the multiple contributors to this plugin over the last few years -- both those with code and those with questions.
 
@@ -88,8 +95,8 @@ cordova plugin add https://github.com/agamemnus/cordova-plugin-xapkreader.git#co
 
 The plugin provides the following variables, which you can set in your app's `config.xml` file, or by using the `--variable` flag to `cordova plugin add`.
 
-- **XAPK_PUBLIC_KEY (Required)**: The [Services & APIs public key][1] from your Google Play developer account. Google requires the app to provide this in order to download the expansion files from its servers. [1]: https://developer.android.com/google/play/licensing/setting-up.html
-- **XAPK_EXPANSION_AUTHORITY**: The [URI "authority"][2] string the plugin should use. This provides an easy way for you to access your expansion files' contents via URLs in the Cordova app. This name must be unique, so it's recommended to match your app's package name, or at least start with it, e.g. "org.example.mycordova" or "org.example.mycordova.expansion". [2]: https://developer.android.com/guide/topics/providers/content-provider-basics.html#ContentURIs
+- **XAPK_PUBLIC_KEY (Required)**: The [Services & APIs public key][1] from your Google Play developer account. Google requires the app to provide this in order to download the expansion files from its servers.
+- **XAPK_EXPANSION_AUTHORITY**: The [URI "authority"][2] string the plugin should use. This provides an easy way for you to access your expansion files' contents via URLs in the Cordova app. This name must be unique, so it's recommended to match your app's package name, or at least start with it, e.g. "org.example.mycordova" or "org.example.mycordova.expansion".
   - *Default:* The package name of your app (e.g. the "id" attribute in your config.xml's "widget" tag).
 - **XAPK_MAIN_VERSION**: The version number for your "main" expansion file. If provided, the plugin will only use an expansion file with this version number.
   - *Default:* 0. A value of 0 indicates that the app should use the first file it finds in the expansion directory that has a name starting with "main".
@@ -109,6 +116,9 @@ The plugin provides the following variables, which you can set in your app's `co
 
 **Note:** Cordova does not seem to automatically propagate changes to these variables in into the compiled app. So when you update one of these, you'll need to either manually edit the file `plugins/android.json` with the new value, or (if you've saved all your settings into your `config.xml` file) remove and re-add the plugin using `cordova plugin rm` and `cordova plugin add`.
 
+[1]: https://developer.android.com/google/play/licensing/setting-up.html
+[2]: https://developer.android.com/guide/topics/providers/content-provider-basics.html#ContentURIs
+
 # Usage
 
 ## Expansion files (OBB files)
@@ -121,7 +131,9 @@ In Windows, I use 7zip, which shows "version 20" in the file properties. Some zi
 
 (You may ask, why use a ZIP file if it's not compressed? The reason is that Google requires us to use just one file, hence a ZIP. Leaving it uncompressed lets us quickly read from it, and since most media formats are already compressed, compression is unnecessary anyway.)
 
-Google doesn't care what name you give the file when you upload it. When the file is downloaded onto the user's device it will be [automatically renamed][3] to `[main|patch].<expansion-version>.<package-name>.obb], e.g. `main.18009.org.example.mycordova.obb`. Hence these are often called **OBB files**. [3]: https://developer.android.com/google/play/expansion-files.html#Filename
+Google doesn't care what name you give the file when you upload it. When the file is downloaded onto the user's device it will be [automatically renamed][3] to `[main|patch].<expansion-version>.<package-name>.obb], e.g. `main.18009.org.example.mycordova.obb`. Hence these are often called **OBB files**.
+
+[3]: https://developer.android.com/google/play/expansion-files.html#Filename
 
 ### Main & Patch files
 
