@@ -8,7 +8,7 @@ Table of Contents
 - [Donations?](#donations)
 - [Requirements](#requirements)
 - [Installation & Setup](#installation--setup)
-  - [Plugin Config Variables](#plugin-config-variables]
+  - [Plugin Config Variables](#plugin-config-variables)
 - [Usage](#usage)
   - [Expansion Files (OBB Files)](#expansion-files-obb-files)
     - [Main & Patch files](#main--patch-files)
