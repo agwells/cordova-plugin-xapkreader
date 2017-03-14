@@ -40,11 +40,11 @@ To use an APK expansion file, your app needs additional code to access the expan
 Yes, I put this near the top, so you, dear reader, wouldn't miss it.
 
 * Perhaps you'd like to donate some money to my gittip account?
-** https://www.gittip.com/agamemnus/
+  * https://www.gittip.com/agamemnus/
 * I also have a Paypal account
-** *agamemnus at flyingsoftgames dot com*.
+  * `agamemnus at flyingsoftgames dot com`
 * Or... maybe try my first game on Google Play, and perhaps buy some gems
-** https://play.google.com/store/apps/details?id=com.flyingsoft.safari.jigsaw.free
+  * https://play.google.com/store/apps/details?id=com.flyingsoft.safari.jigsaw.free
 
 Alternatively, simply donate to the open source community. And here I would like to take the opportunity to thank the multiple contributors to this plugin over the last few years -- both those with code and those with questions.
 
